@@ -1,6 +1,4 @@
-ARG PYTHON_VERSION=3.9-slim-bullseye
-
-
+ARG PYTHON_VERSION=3.10-slim-bullseye
 
 # define an alias for the specfic python version used in this file.
 FROM python:${PYTHON_VERSION} as python
@@ -29,7 +27,7 @@ RUN pip wheel --wheel-dir /usr/src/app/wheels  \
 FROM python as python-run-stage
 
 ARG BUILD_ENVIRONMENT=production
-ARG APP_HOME=/app
+ARG APP_HOME=/usr/src/app
 
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
