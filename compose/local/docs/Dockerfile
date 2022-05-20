@@ -1,11 +1,19 @@
-ARG PYTHON_VERSION=3.9-slim-bullseye
-
+ARG PYTHON_VERSION=3.10
 # define an alias for the specfic python version used in this file.
 FROM python:${PYTHON_VERSION} as python
 
+WORKDIR /usr/src/app
 
 # Python build stage
 FROM python as python-build-stage
+# Install poetry for dep management
+RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+ENV PATH="$PATH:/root/.poetry/bin"
+RUN poetry config virtualenvs.create false
+# Install project manifest
+COPY poetry.lock pyproject.toml ./
+# Install production dependencies
+RUN poetry install --no-root
 
 ENV PYTHONDONTWRITEBYTECODE 1
 
@@ -18,21 +26,20 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
 
-# Requirements are installed here to ensure they will be cached.
-COPY ./requirements /requirements
-
-# create python dependency wheels
-RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels  \
-  -r /requirements/local.txt -r /requirements/production.txt \
-  && rm -rf /requirements
-
-
 # Python 'run' stage
 FROM python as python-run-stage
 
 ARG BUILD_ENVIRONMENT
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
+
+# Install poetry for dep management
+RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+ENV PATH="$PATH:/root/.poetry/bin"
+RUN poetry config virtualenvs.create false
+# Install project manifest
+COPY poetry.lock pyproject.toml ./
+RUN poetry install --no-interaction
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
   # To run the Makefile
@@ -49,13 +56,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   # cleaning up unused files
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
-
-# copy python dependency wheels from python-build-stage
-COPY --from=python-build-stage /usr/src/app/wheels /wheels
-
-# use wheels to install python dependencies
-RUN pip install --no-cache /wheels/* \
-  && rm -rf /wheels
 
 COPY ./compose/local/docs/start /start-docs
 RUN sed -i 's/\r$//g' /start-docs

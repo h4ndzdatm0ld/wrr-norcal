@@ -1,7 +1,0 @@
-# PostgreSQL
-# ------------------------------------------------------------------------------
-POSTGRES_HOST=postgres
-POSTGRES_PORT=5432
-POSTGRES_DB=wrr_norcal
-POSTGRES_USER=lIGRFiTInYhOsjsUTkNxKKNbZEtlObGc
-POSTGRES_PASSWORD=NmQbNiEFuUabQcOOjwGexzGa25GoOGPez65sRaebdKeM68Xd7rdTnY0NhlZyG8aC

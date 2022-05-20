@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 volumes:
   wrr_norcal_local_postgres_data: {}
@@ -6,6 +6,7 @@ volumes:
 
 services:
   django: &django
+    working_dir: /usr/src/app
     build:
       context: .
       dockerfile: ./compose/local/django/Dockerfile
@@ -17,7 +18,7 @@ services:
       - redis
       - mailhog
     volumes:
-      - .:/app:z
+      - .:/usr/src/app:z
     env_file:
       - ./.envs/.local/.django
       - ./.envs/.local/.postgres
@@ -48,8 +49,8 @@ services:
       - ./.envs/.local/.django
     volumes:
       - ./docs:/docs:z
-      - ./config:/app/config:z
-      - ./wrr_norcal:/app/wrr_norcal:z
+      - ./config:/usr/src/app/config:z
+      - ./wrr_norcal:/usr/src/app/wrr_norcal:z
     ports:
       - "9000:9000"
     command: /start-docs

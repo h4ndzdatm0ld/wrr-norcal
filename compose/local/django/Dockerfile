@@ -1,7 +1,8 @@
-ARG PYTHON_VERSION=3.9-slim-bullseye
-
+ARG PYTHON_VERSION=3.10
 # define an alias for the specfic python version used in this file.
 FROM python:${PYTHON_VERSION} as python
+
+WORKDIR /usr/src/app
 
 # Python build stage
 FROM python as python-build-stage
@@ -15,19 +16,22 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   # psycopg2 dependencies
   libpq-dev
 
-# Requirements are installed here to ensure they will be cached.
-COPY ./requirements .
-
-# Create Python Dependency and Sub-Dependency Wheels.
-RUN pip wheel --wheel-dir /usr/src/app/wheels  \
-  -r ${BUILD_ENVIRONMENT}.txt
-
+# Install poetry for dep management
+RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+ENV PATH="$PATH:/root/.poetry/bin"
+RUN poetry config virtualenvs.create false
+# Install project manifest
+COPY poetry.lock pyproject.toml ./
+# Install production dependencies
+RUN poetry install --no-root
 
 # Python 'run' stage
-FROM python as python-run-stage
+FROM python-build-stage as python-run-stage
+
+RUN poetry install --no-interaction
 
 ARG BUILD_ENVIRONMENT=local
-ARG APP_HOME=/app
+ARG APP_HOME=/usr/src/app
 
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -36,22 +40,16 @@ ENV BUILD_ENV ${BUILD_ENVIRONMENT}
 WORKDIR ${APP_HOME}
 
 # Install required system dependencies
-RUN apt-get update && apt-get install --no-install-recommends -y \
+RUN apt-get update && apt-get install -y \
   # psycopg2 dependencies
   libpq-dev \
   # Translations dependencies
   gettext \
+  # Curl
+  curl \
   # cleaning up unused files
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
-
-# All absolute dir copies ignore workdir instruction. All relative dir copies are wrt to the workdir instruction
-# copy python dependency wheels from python-build-stage
-COPY --from=python-build-stage /usr/src/app/wheels  /wheels/
-
-# use wheels to install python dependencies
-RUN pip install --no-cache-dir --no-index --find-links=/wheels/ /wheels/* \
-	&& rm -rf /wheels/
 
 COPY ./compose/production/django/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint
@@ -60,7 +58,6 @@ RUN chmod +x /entrypoint
 COPY ./compose/local/django/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
-
 
 COPY ./compose/local/django/celery/worker/start /start-celeryworker
 RUN sed -i 's/\r$//g' /start-celeryworker
@@ -73,7 +70,6 @@ RUN chmod +x /start-celerybeat
 COPY ./compose/local/django/celery/flower/start /start-flower
 RUN sed -i 's/\r$//g' /start-flower
 RUN chmod +x /start-flower
-
 
 # copy application code to WORKDIR
 COPY . ${APP_HOME}

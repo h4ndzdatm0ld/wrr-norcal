@@ -1,0 +1,122 @@
+[tool.poetry]
+name = "wrr-norcal"
+version = "0.1.0"
+description = "Wildfire Rapid Response - NorCal"
+authors = ["Hugo <hugotinoco@icloud.com>"]
+license = "LICENSE"
+
+[tool.poetry.dependencies]
+django = "3.2.13"
+python = "^3.10"
+Werkzeug = "*"
+pytz = "^2022.1"
+python-slugify = "^6.1.2"
+Pillow = "^9.1.1"
+argon2-cffi = "^21.3.0"
+redis = "^4.3.1"
+hiredis = "^2.0.0"
+celery = "^5.2.6"
+django-celery-beat = "^2.2.1"
+flower = "^1.0.0"
+django-environ = "^0.8.1"
+django-model-utils = "^4.2.0"
+django-allauth = "^0.50.0"
+django-crispy-forms = "^1.14.0"
+crispy-bootstrap5 = "^0.6"
+django-redis = "^5.2.0"
+djangorestframework = "^3.13.1"
+django-cors-headers = "^3.12.0"
+drf-spectacular = "^0.22.1"
+gunicorn = "^20.1.0"
+Collectfast = "^2.2.0"
+django-storages = {extras = ["production"], version = "^1.12.3"}
+django-anymail = {extras = ["production"], version = "^8.6"}
+psycopg2-binary = "^2.9.3"
+django-debug-toolbar = "*"
+django-extensions = "*"
+watchdog = "^2.1.8"
+watchgod = "^0.8.2"
+
+[tool.poetry.dev-dependencies]
+ipdb = "*"
+watchgod = "*"
+mypy = "*"
+pytest = "*"
+pytest-sugar = "*"
+Sphinx = "*"
+sphinx-autobuild = "*"
+flake8 = "*"
+flake8-isort = "*"
+coverage = "*"
+black = "*"
+ipython = "*"
+pytest-django = "^4.5.2"
+factory-boy = "^3.2.1"
+pre-commit = "^2.19.0"
+pylint-django = "^2.5.3"
+pylint-celery = "^0.3"
+django-debug-toolbar = "^3.4.0"
+django-extensions = "^3.1.5"
+django-coverage-plugin = "^2.0.3"
+
+[tool.black]
+line-length = 120
+target-version = ['py37', 'py38', 'py39', 'py310']
+include = '\.pyi?$'
+exclude = '''
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+  )/
+)
+'''
+
+[tool.pylint.master]
+load-plugins="pylint_django, pylint_celery"
+ignore=".venv"
+
+[tool.pylint.basic]
+# No docstrings required for private methods (Pylint default), or for test_ functions, or for inner Meta classes.
+no-docstring-rgx="^(_|test_|Meta$)"
+
+[tool.pylint.SIMILARITIES]
+min-similarity-lines=10
+
+[tool.pylint.messages_control]
+# Line length is enforced by Black, so pylint doesn't need to check it.
+# Pylint and Black disagree about how to format multi-line arrays; Black wins.
+disable = """,
+    line-too-long,
+    bad-continuation,
+    duplicate-code,
+    """
+
+[tool.pylint.miscellaneous]
+# Don't flag TODO as a failure, let us commit with things that still need to be done in the code
+notes = """,
+    FIXME,
+    XXX,
+    """
+
+[tool.pydocstyle]
+convention = "google"
+inherit = false
+match = "(?!__init__).*\\.py"
+match-dir = "(?!tests|migrations|development)[^\\.].*"
+add_ignore = "D212"
+
+[build-system]
+requires = ["poetry_core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"
