@@ -19,12 +19,9 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 # Install poetry for dep management
 RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
 ENV PATH="$PATH:/root/.poetry/bin"
-
 RUN poetry config virtualenvs.create false
-
 # Install project manifest
 COPY poetry.lock pyproject.toml ./
-
 # Install production dependencies
 RUN poetry install --no-root
 
