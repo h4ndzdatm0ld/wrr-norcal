@@ -59,8 +59,13 @@ services:
     build:
       context: .
       dockerfile: ./compose/local/docs/Dockerfile
-    env_file:
-      - ./.envs/.local/.django
+    environment:
+      # Docker
+      USE_DOCKER: "yes"
+      IPYTHONDIR: "usr/src/app/.ipython"
+      REDIS_URL: "redis://redis:6379/0"
+      CELERY_FLOWER_USER: "${LOCAL_CELERY_FLOWER_USER}"
+      CELERY_FLOWER_PASSWORD: "${LOCAL_CELERY_FLOWER_PASSWORD}"
     volumes:
       - ./docs:/docs:z
       - ./config:/usr/src/app/config:z
