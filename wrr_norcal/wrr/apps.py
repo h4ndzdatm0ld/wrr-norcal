@@ -1,6 +1,13 @@
-# from django.apps import AppConfig
+from django.apps import AppConfig
+from django.utils.translation import gettext_lazy as _
 
 
-# class WrrConfig(AppConfig):
-#     default_auto_field = "django.db.models.BigAutoField"
-#     name = "wrr"
+class UsersConfig(AppConfig):
+    name = "wrr_norcal.wrr"
+    verbose_name = _("WRR")
+
+    # def ready(self):
+    #     try:
+    #         import wrr_norcal.wrr.signals  # noqa F401
+    #     except ImportError:
+    #         pass
