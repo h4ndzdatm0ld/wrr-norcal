@@ -19,9 +19,19 @@ services:
       - mailhog
     volumes:
       - .:/usr/src/app:z
-    env_file:
-      - ./.envs/.local/.django
-      - ./.envs/.local/.postgres
+    environment:
+      # Docker
+      USE_DOCKER: "yes"
+      IPYTHONDIR: "usr/src/app/.ipython"
+      REDIS_URL: "redis://redis:6379/0"
+      CELERY_FLOWER_USER: "${LOCAL_CELERY_FLOWER_USER}"
+      CELERY_FLOWER_PASSWORD: "${LOCAL_CELERY_FLOWER_PASSWORD}"
+      # Postgres
+      POSTGRES_HOST: "postgres"
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: "wrr_norcal"
+      POSTGRESS_USER: "${LOCAL_POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${LOCAL_POSTGRES_PASSWORD}"
     ports:
       - "8000:8000"
     command: /start
@@ -35,8 +45,12 @@ services:
     volumes:
       - wrr_norcal_local_postgres_data:/var/lib/postgresql/data:Z
       - wrr_norcal_local_postgres_data_backups:/backups:z
-    env_file:
-      - ./.envs/.local/.postgres
+    environment:
+      POSTGRES_HOST: "postgres"
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: "wrr_norcal"
+      POSTGRESS_USER: "${LOCAL_POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${LOCAL_POSTGRES_PASSWORD}"
 
   docs:
     image: wrr_norcal_local_docs
@@ -58,11 +72,16 @@ services:
   mailhog:
     image: mailhog/mailhog:v1.0.1
     container_name: wrr_norcal_local_mailhog
-    env_file:
-      - ./.envs/.local/.mailhog
     ports:
       - 1025:1025
       - 8025:8025
+    environment:
+      MAILHOG_MAILER: "smtp"
+      MAILHOG_HOST: "mailhog"
+      MAILHOG_PORT: 1025
+      MAILHOG_USER: null
+      MAILHOG_PASSWD: null
+      MAILHOG_ENCRYPTION: null
 
   redis:
     image: redis:6
