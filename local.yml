@@ -24,14 +24,14 @@ services:
       USE_DOCKER: "yes"
       IPYTHONDIR: "usr/src/app/.ipython"
       REDIS_URL: "redis://redis:6379/0"
-      CELERY_FLOWER_USER: "${LOCAL_CELERY_FLOWER_USER}"
-      CELERY_FLOWER_PASSWORD: "${LOCAL_CELERY_FLOWER_PASSWORD}"
+      CELERY_FLOWER_USER: "${CELERY_FLOWER_USER}"
+      CELERY_FLOWER_PASSWORD: "${CELERY_FLOWER_PASSWORD}"
       # Postgres
       POSTGRES_HOST: "postgres"
       POSTGRES_PORT: 5432
       POSTGRES_DB: "wrr_norcal"
-      POSTGRESS_USER: "${LOCAL_POSTGRES_USER}"
-      POSTGRES_PASSWORD: "${LOCAL_POSTGRES_PASSWORD}"
+      POSTGRESS_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
     ports:
       - "8000:8000"
     command: /start
@@ -49,8 +49,8 @@ services:
       POSTGRES_HOST: "postgres"
       POSTGRES_PORT: 5432
       POSTGRES_DB: "wrr_norcal"
-      POSTGRESS_USER: "${LOCAL_POSTGRES_USER}"
-      POSTGRES_PASSWORD: "${LOCAL_POSTGRES_PASSWORD}"
+      POSTGRESS_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
 
   docs:
     image: wrr_norcal_local_docs
@@ -64,8 +64,8 @@ services:
       USE_DOCKER: "yes"
       IPYTHONDIR: "usr/src/app/.ipython"
       REDIS_URL: "redis://redis:6379/0"
-      CELERY_FLOWER_USER: "${LOCAL_CELERY_FLOWER_USER}"
-      CELERY_FLOWER_PASSWORD: "${LOCAL_CELERY_FLOWER_PASSWORD}"
+      CELERY_FLOWER_USER: "${CELERY_FLOWER_USER}"
+      CELERY_FLOWER_PASSWORD: "${CELERY_FLOWER_PASSWORD}"
     volumes:
       - ./docs:/docs:z
       - ./config:/usr/src/app/config:z
