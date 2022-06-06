@@ -38,7 +38,7 @@ jobs:
           python-version: "3.10"
 
       - name: Run pre-commit
-        uses: pre-commit/action@v2.0.3
+        uses: pre-commit/action@v3.0.0
 
   # Pending .envs file turned into actual ENV vars
   pytest:
