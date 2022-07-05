@@ -6,7 +6,7 @@ authors = ["Hugo <hugotinoco@icloud.com>"]
 license = "LICENSE"
 
 [tool.poetry.dependencies]
-django = "3.2.13"
+django = "3.2.14"
 python = "^3.10"
 Werkzeug = "*"
 pytz = "^2022.1"
